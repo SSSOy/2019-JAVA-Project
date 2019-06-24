@@ -1,0 +1,5 @@
+class Run extends Thread {
+	public void run() {
+		
+	}
+}
