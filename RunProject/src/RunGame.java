@@ -8,7 +8,7 @@ class RunGame extends JFrame {
 
 	boolean run = true;
 	ImageIcon character = new ImageIcon();
-	Image charRun[] = new Image[2];
+	Image charRun[] = new Image[3];
 	JLabel chara = new JLabel();
 	ImageIcon backG;
 	JButton closeB;
@@ -18,6 +18,7 @@ class RunGame extends JFrame {
 	final int ALL_WIDTH = 1920; // 전체 frame의 폭 1920
 	final int ALL_HEIGHT = 1080; // 전체 frame의 높이 1080
 	int bX[] = { 0, 1920 };
+	goCharacter r = new goCharacter();
 
 	
 	public RunGame() {
@@ -31,7 +32,25 @@ class RunGame extends JFrame {
 		goBackGround goB = new goBackGround();
 		goB.start();
 		MusicPlay music = new MusicPlay("src/Music/GameMusic.wav");
-
+		
+		
+		///////////////////////////////////////////////////////////////
+		//requestFocus();
+		//addKeyListener(new KeyEventListener()); 왜 안 먹지
+		///////////////////////////////////////////////////////////////
+		
+		addMouseListener(new MouseListener() {
+			public void mouseClicked(MouseEvent e) { }
+			public void mousePressed(MouseEvent e) {
+				requestFocus();
+			}
+			public void mouseReleased(MouseEvent e) { }
+			public void mouseEntered(MouseEvent e) { }
+			public void mouseExited(MouseEvent e) { }
+		});
+		
+		addKeyListener(new KeyEventListener());
+		
 		{
 	    	// 버튼 이미지 크기 줄이기
 			ImageIcon close = new ImageIcon("src/Image/close.png");
@@ -57,16 +76,17 @@ class RunGame extends JFrame {
 			try {
 				charRun[0] = ImageIO.read(new File("src/Image/character_run1.png"));
 				charRun[1] = ImageIO.read(new File("src/Image/character_run2.png"));
+				charRun[2] = ImageIO.read(new File("src/Image/character_jump.png"));
 			} catch (Exception e) { e.printStackTrace(); }
 				charRun[0] = charRun[0].getScaledInstance(165, 327, Image.SCALE_SMOOTH);
 				charRun[1] = charRun[1].getScaledInstance(165, 333, Image.SCALE_SMOOTH);
+				charRun[2] = charRun[2].getScaledInstance(200, 320, Image.SCALE_SMOOTH);
 		}
 			
-		goCharacter r = new goCharacter();
 		r.start();
 		
 		 
-		chara.setBounds(150, 500, 190, 330);
+		chara.setBounds(170, 500, 200, 330);
 		contentPane.setLayout(null); // 절대위치 지정하기 위해 해줘야 함
 		contentPane.add(closeB);
 		contentPane.add(chara);
@@ -99,8 +119,6 @@ class RunGame extends JFrame {
 				}
 			};
 			
-			backGround[0].requestFocus();
-			backGround[0].addKeyListener(new MyKeyEvent());
 			
 			while (true) {
 				backGround[0].setBounds(bX[0] -= 2, 0, 1920, 1080);
@@ -139,4 +157,27 @@ class RunGame extends JFrame {
 			}//while
 		}//run()
 	}//goCharacter
+	class KeyEventListener implements KeyListener {
+		public void keyPressed(KeyEvent event) {
+			if(event.getKeyCode() == event.VK_UP) {
+				r.stop();
+				character.setImage(charRun[2]);
+				int location = 170;
+				
+				for(int i = 0; i < 30; i++) {
+					chara.setBounds(location + 3, 500, 200, 330);
+					repaint();
+				}
+				for(int i = 0; i < 30; i++) {
+					chara.setBounds(location - 3, 500, 200, 330);
+					repaint();
+				}
+			}
+			else if(event.getKeyCode() == event.VK_DOWN) { }
+			else { }
+		}
+
+		public void keyTyped(KeyEvent event) { }
+		public void keyReleased(KeyEvent event) { }
+	}
 }
