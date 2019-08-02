@@ -3,14 +3,14 @@ import javax.swing.*;
 import java.awt.event.*;
 
 class Intro extends JFrame {
-	IntroMusic m;
+	MusicPlay m;
 	
 	public Intro() {
 		setResizable(false); // 창 크기 변경 X
 		setVisible(true);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-		m = new IntroMusic();
+		m = new MusicPlay("src/Music/IntroMusic.wav");
 
 		JPanel sbackGround = new JPanel() {
 			ImageIcon backG = new ImageIcon("src/Image/start.jpg");
@@ -53,14 +53,17 @@ class Intro extends JFrame {
 		Introduce_btn.setFocusPainted(false); // 버튼 클릭시 테두리 없애기
 		Introduce_btn.setOpaque(false); // 버튼 투명하게
 
-		ActionListener startB = new ActionListener() {
+		start_btn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				m.stopMusic();
-				new runGame();
+				new RunGame();
 			}
-		};
-
-		start_btn.addActionListener(startB);
+		});
+		Introduce_btn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				new Introduce();
+			}
+		});
 		sbackGround.add(start_btn);
 		sbackGround.add(Introduce_btn);
 
