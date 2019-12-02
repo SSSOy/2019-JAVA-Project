@@ -32,8 +32,8 @@ class Outro extends JFrame {
 		wordKor.setForeground(Color.WHITE);
 		wordEng.setHorizontalAlignment(JLabel.CENTER);
 		wordKor.setHorizontalAlignment(JLabel.CENTER);
-		wordEng.setBounds(570, 360, 500, 200);
-		wordKor.setBounds(570, 500, 500, 200);
+		wordEng.setBounds(570, 320, 500, 200);
+		wordKor.setBounds(570, 460, 500, 200);
 		wordEng.setText(RunGame.word[0]);
 		wordKor.setText(RunGame.word[1]);
 		backGround.add(wordEng);
@@ -63,17 +63,14 @@ class Outro extends JFrame {
 		}catch(Exception e) {
 			System.out.println("Exception : " + e);
 		}
-		
-		ImageIcon gC = new ImageIcon();
-		Image gameC = null;
+	
 		JLabel gameclear = new JLabel();
-		try {
-			gameC = ImageIO.read(new File("src/Image/gameClear.png"));
-		} catch (Exception e) { e.printStackTrace(); }
-		gameC = gameC.getScaledInstance(400, 200, Image.SCALE_SMOOTH);
-		gC.setImage(gameC);
-		gameclear.setIcon(gC);
-		gameclear.setBounds(770, 150, 400, 200);
+		
+		gameclear.setFont(new Font("배달의민족 도현", Font.BOLD, 100));
+		gameclear.setForeground(Color.WHITE);
+		gameclear.setHorizontalAlignment(JLabel.CENTER);
+		gameclear.setBounds(700, 100, 500, 200);
+		gameclear.setText("게임종료");
 		backGround.add(gameclear);
 		
 		JButton close_btn = new JButton();
@@ -130,7 +127,7 @@ class Outro extends JFrame {
 			in.setImage(i2);
 			audioPlay_btn = new JButton(in);
 		}
-		audioPlay_btn.setBounds(1150, 470, 150, 150); // 절대위치 지정 (x, y, w, h)
+		audioPlay_btn.setBounds(1110, 430, 150, 150); // 절대위치 지정 (x, y, w, h)
 		audioPlay_btn.setBorderPainted(false); // 버튼 외곽선 없애기
 		audioPlay_btn.setContentAreaFilled(false); // 버튼 영역 채우기 없애기
 		audioPlay_btn.setFocusPainted(false); // 버튼 클릭시 테두리 없애기
@@ -150,7 +147,7 @@ class Outro extends JFrame {
 		Message.setFont(new Font("배달의민족 도현", Font.BOLD, 45));
 		Message.setForeground(Color.WHITE);
 		Message.setHorizontalAlignment(JLabel.CENTER);
-		Message.setBounds(470, 670, 1000, 200);
+		Message.setBounds(470, 640, 1000, 200);
 		
 		if(RunGame.wordIndexCnt == RunGame.wordLength) {
 			Message.setText("거북이가 단어 획득에 성공했습니다! 축하해요!");

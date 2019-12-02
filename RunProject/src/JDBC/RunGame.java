@@ -88,10 +88,11 @@ class RunGame extends JFrame {
 
 		wordP.setFont(new Font("배달의민족 도현", Font.BOLD, 100));
 		wordP.setHorizontalAlignment(JLabel.CENTER);
+		wordP.setForeground(Color.RED);
 		wordP.setVisible(false);
 		contentPane.add(wordP);
 		
-		wordP.setBounds(810, 60, 400, 100);
+		wordP.setBounds(790, 100, 400, 100);
 		
 		{
 			// 버튼 이미지 크기 줄이기
