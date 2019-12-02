@@ -1,12 +1,10 @@
 package JDBC;
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.File;
+import java.awt.event.*;
+import java.io.*;
 import java.sql.*;
-
-import javax.imageio.ImageIO;
+import javax.imageio.*;
 import javax.swing.*;
 
 class Outro extends JFrame {
@@ -24,10 +22,28 @@ class Outro extends JFrame {
 			}
 		};
 
+
+		JLabel wordEng = new JLabel();
+		JLabel wordKor = new JLabel();
+		
+		wordEng.setFont(new Font("배달의민족 도현", Font.BOLD, 100));
+		wordKor.setFont(new Font("배달의민족 도현", Font.BOLD, 100));
+		wordEng.setForeground(Color.WHITE);
+		wordKor.setForeground(Color.WHITE);
+		wordEng.setHorizontalAlignment(JLabel.CENTER);
+		wordKor.setHorizontalAlignment(JLabel.CENTER);
+		wordEng.setBounds(570, 360, 500, 200);
+		wordKor.setBounds(570, 500, 500, 200);
+		wordEng.setText(RunGame.word[0]);
+		wordKor.setText(RunGame.word[1]);
+		backGround.add(wordEng);
+		backGround.add(wordKor);
+		
+		String music = null;
+		
 		//DB연동
 		Connection con = null;
 		PreparedStatement ps = null;
-
 		try {
 			Class.forName("org.gjt.mm.mysql.Driver").newInstance();
 			con = DriverManager.getConnection("JDBC:mysql://localhost:3306/turtlegame", "root", "mirim2");
@@ -38,32 +54,14 @@ class Outro extends JFrame {
 			System.out.println("Exception : " + ex);
 		}
 
-		JLabel wordEng[] = new JLabel[RunGame.indexCnt];
-		JLabel wordKor[] = new JLabel[RunGame.indexCnt];
-		for(int i = 0; i < RunGame.indexCnt; i++) {
-			wordEng[i] = new JLabel();
-			wordKor[i] = new JLabel();
-
-			String sql = "select english, korean from words where num = " + RunGame.wordIndex[i] + ";";
-
-			try {
-				ps = con.prepareStatement(sql);
-				ResultSet srs = ps.executeQuery();
-				while(srs.next()) {
-					wordEng[i].setText(srs.getString("english"));
-					wordKor[i].setText(srs.getString("korean"));
-				}
-			}catch(Exception e) {
-				System.out.println("Exception : " + e);
-			}
-			wordEng[i].setFont(new Font("배달의민족 도현", Font.BOLD, 50));
-			wordKor[i].setFont(new Font("배달의민족 도현", Font.BOLD, 50));
-			wordEng[i].setForeground(Color.WHITE);
-			wordKor[i].setForeground(Color.WHITE);
-			wordEng[i].setBounds(710, 400 + (100 * i), 400, 100);
-			wordKor[i].setBounds(1110, 400 + (100 * i), 400, 100);
-			backGround.add(wordEng[i]);
-			backGround.add(wordKor[i]);
+		String sql = "select audio from words where english = '" + RunGame.word[0] + "';";
+		try {
+			ps = con.prepareStatement(sql);
+			ResultSet srs = ps.executeQuery();
+			while(srs.next()) 
+				music = srs.getString("audio");
+		}catch(Exception e) {
+			System.out.println("Exception : " + e);
 		}
 		
 		ImageIcon gC = new ImageIcon();
@@ -118,10 +116,48 @@ class Outro extends JFrame {
 		replay_btn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				new Intro();
+				dispose();
 			}
 		});
 		backGround.add(replay_btn);
 		
+		JButton audioPlay_btn = new JButton();
+		{
+			// 버튼 이미지 크기 줄이기
+			ImageIcon in = new ImageIcon("src/Image/englishAudio_btn.png");
+			Image i1 = in.getImage();
+			Image i2 = i1.getScaledInstance(150, 150, Image.SCALE_SMOOTH);
+			in.setImage(i2);
+			audioPlay_btn = new JButton(in);
+		}
+		audioPlay_btn.setBounds(1150, 470, 150, 150); // 절대위치 지정 (x, y, w, h)
+		audioPlay_btn.setBorderPainted(false); // 버튼 외곽선 없애기
+		audioPlay_btn.setContentAreaFilled(false); // 버튼 영역 채우기 없애기
+		audioPlay_btn.setFocusPainted(false); // 버튼 클릭시 테두리 없애기
+		audioPlay_btn.setOpaque(false); // 버튼 투명하게
+		
+		final String music2 = music;
+		System.out.println(music2);
+		audioPlay_btn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				MusicPlay m = new MusicPlay(music2);
+			}
+		});
+		backGround.add(audioPlay_btn);
+		
+		JLabel Message = new JLabel();
+		
+		Message.setFont(new Font("배달의민족 도현", Font.BOLD, 45));
+		Message.setForeground(Color.WHITE);
+		Message.setHorizontalAlignment(JLabel.CENTER);
+		Message.setBounds(470, 670, 1000, 200);
+		
+		if(RunGame.wordIndexCnt == RunGame.wordLength) {
+			Message.setText("거북이가 단어 획득에 성공했습니다! 축하해요!");
+		}
+		else 
+			Message.setText("단어 획득에 실패했어요. 다시 도전해보세요!");
+		backGround.add(Message);
 		
 		JScrollPane SscrollPane = new JScrollPane(backGround);
 

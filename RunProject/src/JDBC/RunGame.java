@@ -23,16 +23,18 @@ class RunGame extends JFrame {
 	int life = 2;
 	JLabel lifeImg[] = new JLabel[3];
 	JLabel item = new JLabel();
-	JLabel word[] = new JLabel[2];
+	JLabel wordP = new JLabel();
 	Connection con = null;
 	PreparedStatement ps = null;
 	int DBcnt;
-	static int wordIndex[] = {0, 0, 0, 0, 0};
-	static int indexCnt = 0;
+	static String word[] = new String[2];
+	static int wordLength = 0;
+	static int wordIndexCnt = 0;
 	goBackGround goB = new goBackGround();
 	obstacle ob = new obstacle();
 	goCharacter run = new goCharacter();
 	boolean jump = true;
+	MusicPlay m = null;
 
 	
 	public RunGame() {
@@ -44,16 +46,61 @@ class RunGame extends JFrame {
 		contentPane = getContentPane();
 		
 		JButton closeB, goBtn;
-		MusicPlay m = new MusicPlay("src/Music/GameMusic.wav");
+		m = new MusicPlay("src/Music/GameMusic.wav");
+		
+		//DB연동
+		try {
+			Class.forName("org.gjt.mm.mysql.Driver").newInstance();
+			con = DriverManager.getConnection("JDBC:mysql://localhost:3306/turtlegame", "root", "mirim2");
+
+		}catch(SQLException ex) {
+			System.out.println("SQLException : " + ex);
+		}catch(Exception ex) {
+			System.out.println("Exception : " + ex);
+		}
+
+		String sql = "select count(*) as cnt from words;";
+		try {
+			ps = con.prepareStatement(sql);
+			ResultSet srs = ps.executeQuery();
+			while(srs.next()) 
+				DBcnt = Integer.parseInt(srs.getString("cnt"));
+		}catch(Exception e) {
+			System.out.println("Exception : " + e);
+		}
+		
+		Random r = new Random();
+		int random = r.nextInt(DBcnt) + 1;
+
+		sql = "select english, korean from words where num = " + random + ";";
+		try {
+			ps = con.prepareStatement(sql);
+			ResultSet srs = ps.executeQuery();
+			while(srs.next()) { 
+				word[0] = srs.getString("english");
+				word[1] = srs.getString("korean");
+			}
+		}catch(Exception e) {
+			System.out.println("Exception : " + e);
+		}
+		wordLength = word[0].length();
+		wordP.setVisible(true);
+
+		wordP.setFont(new Font("배달의민족 도현", Font.BOLD, 100));
+		wordP.setHorizontalAlignment(JLabel.CENTER);
+		wordP.setVisible(false);
+		contentPane.add(wordP);
+		
+		wordP.setBounds(810, 60, 400, 100);
 		
 		{
-	    	// 버튼 이미지 크기 줄이기
+			// 버튼 이미지 크기 줄이기
 			ImageIcon goBt = new ImageIcon("src/Image/go_btn.png");
-		   	Image ci1 = goBt.getImage();
-		   	Image ci2 = ci1.getScaledInstance(1920, 1080, Image.SCALE_SMOOTH);
-		   	goBt.setImage(ci2);
-		   	goBtn = new JButton(goBt);
-	    }
+			Image ci1 = goBt.getImage();
+			Image ci2 = ci1.getScaledInstance(1920, 1080, Image.SCALE_SMOOTH);
+			goBt.setImage(ci2);
+			goBtn = new JButton(goBt);
+		}
 		
 		addKeyListener(new KeyEventListener());
 		
@@ -139,37 +186,6 @@ class RunGame extends JFrame {
 			itemImage.setImage(itemImg);
 			item.setIcon(itemImage);
 		}
-		
-		//DB연동
-		try {
-			Class.forName("org.gjt.mm.mysql.Driver").newInstance();
-			con = DriverManager.getConnection("JDBC:mysql://localhost:3306/turtlegame", "root", "mirim2");
-			
-		}catch(SQLException ex) {
-			System.out.println("SQLException : " + ex);
-		}catch(Exception ex) {
-			System.out.println("Exception : " + ex);
-		}
-		
-		String sql = "select count(*) as cnt from words;";
-		try {
-			ps = con.prepareStatement(sql);
-			ResultSet srs = ps.executeQuery();
-			while(srs.next()) 
-				DBcnt = Integer.parseInt(srs.getString("cnt"));
-		}catch(Exception e) {
-			System.out.println("Exception : " + e);
-		}
-		
-		for(int i = 0; i < 2; i++) {
-			word[i] = new JLabel();
-			word[i].setFont(new Font("배달의민족 도현", Font.BOLD, 60));
-			word[i].setHorizontalAlignment(JLabel.CENTER);
-			word[i].setVisible(false);
-			contentPane.add(word[i]);
-		}
-		word[0].setBounds(810, 30, 400, 100);
-		word[1].setBounds(810, 120, 400, 100);
 		
 		chara.setBounds(170, 500, 200, 330);
 		contentPane.setLayout(null); // 절대위치 지정하기 위해 해줘야 함
@@ -316,6 +332,7 @@ class RunGame extends JFrame {
 									chara.getX() + chara.getWidth() < location + obs.getWidth())
 									&& chara.getY() > 490) {
 								crash = true;
+								MusicPlay crashMusic = new MusicPlay("src/Music/crash.wav");
 								if(life >= 0) lifeImg[life].setVisible(false);
 								life--; 
 							}
@@ -327,22 +344,12 @@ class RunGame extends JFrame {
 								if(itemtf == 1) {
 									itemCrash = true;
 									item.setVisible(false);
-									wordIndex[indexCnt] = r.nextInt(DBcnt) + 1;
-
-									String sql = "select english, korean from words where num = " + wordIndex[indexCnt] + ";";
-									try {
-										ps = con.prepareStatement(sql);
-										ResultSet srs = ps.executeQuery();
-										while(srs.next()) { 
-											word[0].setText(srs.getString("english"));
-											word[1].setText(srs.getString("korean"));
-										}
-									}catch(Exception e) {
-										System.out.println("Exception : " + e);
-									}
-									word[0].setVisible(true);
-									word[1].setVisible(true);
-									indexCnt++;
+									MusicPlay itemMusic = new MusicPlay("src/Music/item.wav");
+									
+									wordP.setText(word[0].substring(wordIndexCnt, wordIndexCnt + 1));
+									wordP.setVisible(true);
+									
+									wordIndexCnt++;
 								}
 							}
 						}
@@ -353,13 +360,11 @@ class RunGame extends JFrame {
 							crash = false;
 							itemCrash = false;
 							item.setVisible(true);
-							word[0].setVisible(false);
-							word[1].setVisible(false);
-							if(life < 0 || indexCnt >= 5) {
+							wordP.setVisible(false);
+							if(life < 0 || wordIndexCnt >= wordLength) {
 								run.interrupt();
 								goB.interrupt();
 								ob.interrupt();
-								
 							}
 							break;
 						}
@@ -370,6 +375,7 @@ class RunGame extends JFrame {
 			}//try
 			catch(Exception e) { }
 			finally {
+				m.stopMusic();
 				new Outro();
 				dispose();
 			}
