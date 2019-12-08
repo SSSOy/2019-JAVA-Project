@@ -268,8 +268,6 @@ class RunGame extends JFrame {
 				JumpCharacter jc = new JumpCharacter();
 				jc.start();
 			}
-			else if(event.getKeyCode() == KeyEvent.VK_DOWN) { }
-			else { }
 		}
 	}
 	class JumpCharacter extends Thread {
@@ -324,10 +322,11 @@ class RunGame extends JFrame {
 							item.setBounds(itemLocation -= 5, 450, 100, 100);
 						}
 						try {
-							Thread.sleep(5);
+							Thread.sleep(3);
 						} catch (InterruptedException e1) {
 							e1.printStackTrace();
 						}
+						
 						if(!crash) {
 							if((chara.getX() + chara.getWidth() > location &&
 									chara.getX() + chara.getWidth() < location + obs.getWidth())

@@ -6,7 +6,7 @@ class MusicPlay {
 	Clip clip = null;
 	AudioInputStream audio = null;
 
-	MusicPlay(String s) {
+	public MusicPlay(String s) {
 		playAudio(s);
 	}
 
