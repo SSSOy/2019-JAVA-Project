@@ -1,4 +1,4 @@
-# 2019-JAVA-Project
+# 2019_JAVA_Project
 
 " 영어를 쉽고 재미있게 공부할 수 있는 게임! "
 
